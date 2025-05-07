@@ -411,7 +411,7 @@ fn derive_wallet_field(
             let mut current_discriminant: u8 = 0;
             let mut next_discriminant: u8 = 0;
             let inherit_variant_templates = *input.template_inherit;
-            let (variants, metadatas) = e.iter()
+            let (variants, metadatas): (Vec<_>, Vec<_>) = e.iter()
             .map(|variant| {
                 if next_discriminant < current_discriminant {
                     // That means we wrapped past 255 last loop. This variant has discriminant 256.
@@ -469,7 +469,7 @@ fn derive_wallet_field(
                         }
                     )
                 )})
-                .collect::<Result<(Vec<_>, Vec<_>), _>>()?;
+                .collect::<Result<Vec<(TokenStream, TokenStream)>, _>>()?.into_iter().unzip();
             add_self_bound_to_where_clause(where_under_construction);
 
             child_templates = quote! {
@@ -549,7 +549,7 @@ pub fn build_struct_type_scaffold(
     extend_where_clause_with_field_bounds(fields, where_clause, prefix);
 
     let mut peekable = false;
-    let (fields, field_serdes) = fields
+    let (fields, field_serdes): (Vec<_>, Vec<_>) = fields
         .iter()
         .filter(|field| !field.skip)
         .map(|field| {
@@ -586,7 +586,7 @@ pub fn build_struct_type_scaffold(
                 },
             ))
         })
-        .collect::<Result<(Vec<_>, Vec<_>), _>>()?;
+        .collect::<Result<Vec<(TokenStream, TokenStream)>, _>>()?.into_iter().unzip();
 
     let serde_name = serde_rename.rename_typename(&type_name)?;
     Ok(quote! {

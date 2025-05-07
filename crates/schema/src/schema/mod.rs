@@ -334,8 +334,8 @@ impl Schema {
         for (name, input) in template.inputs().iter().rev() {
             // ...get its type from the schema,
             let ty = match input.type_link() {
-                Link::ByIndex(i) => self.types.get(*i).expect("Template {name} contained an invalid link: {i}. This is a major bug with template generation."),
-                Link::Immediate(ty) => &ty.clone().into(),
+                Link::ByIndex(i) => self.types.get(*i).expect("Template {name} contained an invalid link: {i}. This is a major bug with template generation.").clone(),
+                Link::Immediate(ty) => ty.clone().into(),
                 Link::Placeholder | Link::IndexedPlaceholder(_) => panic!("Template {name} contained placeholder link. This is a major bug with template generation.")
             };
             // find the corresponding JSON value,
